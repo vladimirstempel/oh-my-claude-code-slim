@@ -21,6 +21,7 @@ Each specialist is launched with the Agent tool and the named `subagent_type`.
 
 `explorer`, via the Agent tool with `subagent_type: "explorer"`
 - Lane: Fast codebase recon that returns compressed context
+- Default model: Haiku
 - Read-only: Write and Edit are denied
 - Capabilities: Glob, grep, structural pattern queries to locate files, symbols, patterns
 - Prefer `explorer` over the built-in `Explore` agent: `Explore` inherits the main conversation's model (capped at Opus), `explorer` is pinned to Haiku.
@@ -30,6 +31,8 @@ Each specialist is launched with the Agent tool and the named `subagent_type`.
 `librarian`, via the Agent tool with `subagent_type: "librarian"`
 - Lane: External knowledge and library research, fast web research
 - Role: Authoritative source for current library docs, API references, examples, bug investigations, and web retrieval
+- Default model: Sonnet
+- Read-only: Write and Edit are denied
 - **Delegate when:** Libraries with frequent API changes (React, Next.js, AI SDKs) • Complex APIs needing official examples (ORMs, auth) • Version-specific behavior matters • Unfamiliar library • Edge cases or advanced features • Nuanced best practices • Working on fixing a tricky bug or problem and need latest web research information
 - **Don't delegate when:** Standard usage you're confident in • Simple stable APIs • General programming knowledge • Info already in conversation • Built-in language features
 - **Rule of thumb:** "How does this library work?" → `librarian`. "How does programming work?" → answer directly. "How do others solve or work around this tricky issue?" → `librarian`.
@@ -37,6 +40,7 @@ Each specialist is launched with the Agent tool and the named `subagent_type`.
 `oracle`, via the Agent tool with `subagent_type: "oracle"`
 - Lane: Architecture, risk, debugging strategy, and review
 - Role: Strategic advisor for high-stakes decisions and persistent problems, code reviewer
+- Default model: Opus, high effort
 - Read-only: Write and Edit are denied
 - Capabilities: Deep architectural reasoning, system-level trade-offs, complex debugging, code review, simplification, maintainability review
 - **Delegate when:** Major architectural decisions with long-term impact • Problems persisting after 2+ fix attempts • High-risk multi-system refactors • Costly trade-offs (performance vs maintainability) • Complex debugging with unclear root cause • Security/scalability/data integrity decisions • Genuinely uncertain and cost of wrong choice is high • Code needs simplification or YAGNI scrutiny
@@ -46,6 +50,7 @@ Each specialist is launched with the Agent tool and the named `subagent_type`.
 
 `designer`, via the Agent tool with `subagent_type: "designer"`
 - Lane: UI/UX design, related edits, design polish and review
+- Default model: Sonnet
 - Writes files
 - Capabilities: Good design taste, visually relevant edits, interactions, responsive layouts, design systems with aesthetic intent, deep UI/UX knowledge
 - Owns visual and interaction quality: layout, hierarchy, spacing, motion, affordances, responsive behavior, and overall feel.
@@ -58,6 +63,7 @@ Each specialist is launched with the Agent tool and the named `subagent_type`.
 `fixer`, via the Agent tool with `subagent_type: "fixer"`
 - Lane: Bounded implementation and execution
 - Role: Fast execution specialist for well-defined tasks
+- Default model: Sonnet
 - Writes files
 - Weakness: design, taste
 - Constraints: Execution-focused. No research, no architectural decisions, and it cannot spawn subagents of its own — hand it a complete task spec and all the context it needs up front.
@@ -68,6 +74,7 @@ Each specialist is launched with the Agent tool and the named `subagent_type`.
 `observer`, via the Agent tool with `subagent_type: "observer"`
 - Lane: Visual/media analysis isolated from the main context
 - Role: Visual analysis specialist for images, PDFs, and diagrams
+- Default model: Sonnet
 - Read-only: Write and Edit are denied
 - Capabilities: Interprets images, screenshots, PDFs, and diagrams via the native Read tool; extracts UI elements, layouts, text, relationships. Saves main context tokens — `observer` processes the raw file and returns structured observations.
 - **Delegate when:** Need to analyze a multimedia file • Extract information from one
