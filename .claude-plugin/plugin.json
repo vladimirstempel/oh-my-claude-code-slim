@@ -1,0 +1,11 @@
+{
+  "name": "oh-my-claudecode-slim",
+  "version": "0.1.0",
+  "description": "Slim multi-agent orchestration for Claude Code: six specialist agents and seven skills, zero runtime.",
+  "author": {
+    "name": "stempelv",
+    "email": "stempelv@gmail.com"
+  },
+  "license": "MIT",
+  "keywords": ["claude-code", "plugin", "agents", "orchestration", "slim"]
+}

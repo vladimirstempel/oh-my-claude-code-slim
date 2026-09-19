@@ -1,0 +1,19 @@
+{
+  "$schema": "https://anthropic.com/claude-code/marketplace.schema.json",
+  "name": "oh-my-claudecode-slim",
+  "owner": {
+    "name": "stempelv",
+    "email": "stempelv@gmail.com"
+  },
+  "plugins": [
+    {
+      "name": "oh-my-claudecode-slim",
+      "description": "Slim multi-agent orchestration for Claude Code: six specialist agents and seven skills, zero runtime.",
+      "version": "0.1.0",
+      "source": "./",
+      "category": "productivity",
+      "homepage": "https://github.com/stempelv/oh-my-claudecode-slim",
+      "tags": ["agents", "orchestration", "delegation", "slim"]
+    }
+  ]
+}
