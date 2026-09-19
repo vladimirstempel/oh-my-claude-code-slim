@@ -11,20 +11,41 @@ the agent file that Claude Code resolves ahead of the plugin's own copy.
 
 ## How an override works
 
-Claude Code resolves subagents by scope: managed settings > project
-(`.claude/agents/`) > user (`~/.claude/agents/`) > plugin (`agents/`). A file
-at `~/.claude/agents/<name>.md` shadows the plugin's version of the same
-agent completely — the plugin file is not merged, it is replaced.
+Claude Code resolves subagents by scope, highest first: managed settings >
+`--agents` CLI flag (current session) > project (`.claude/agents/`) > user
+(`~/.claude/agents/`) > plugin (`agents/`). A file at
+`~/.claude/agents/<name>.md` shadows the plugin's version of the same agent
+completely — the plugin file is not merged, it is replaced.
 
-To change one agent's model:
+All three changes below (model, prompt, disable) revert the same way: delete
+`~/.claude/agents/<name>.md`, or drop the `permissions.deny` rule.
+
+### Change the model or effort
 
 1. Read the plugin's version at `${CLAUDE_PLUGIN_ROOT}/agents/<name>.md`.
 2. Write the whole file to `~/.claude/agents/<name>.md`, changing only the
-   `model:` (or `effort:`) line. Never paraphrase the prompt body.
+   `model:` (or `effort:`) line. Copy the prompt body verbatim — this
+   procedure is a model/effort swap, not a rewrite, so don't paraphrase it.
 3. Tell the user the override is now user-scoped: plugin updates will no
    longer reach that agent until they delete the file.
 
-To revert: delete `~/.claude/agents/<name>.md`.
+### Override the prompt
+
+Same shadowing mechanism, different intent: write
+`~/.claude/agents/<name>.md` with the user's own prompt body in place of the
+plugin's, keeping whichever frontmatter fields (`name`, `description`,
+`model`, `effort`) the new prompt still needs. Unlike the model swap above,
+this is a deliberate rewrite — ask the user what the prompt should say
+rather than inventing or paraphrasing one yourself.
+
+### Disable an agent
+
+This isn't file-shadowing — it's a permission rule. Add `"Agent(<name>)"`
+(e.g. `"Agent(fixer)"`) to the `permissions.deny` array in a settings file:
+project `.claude/settings.json`, project-local `.claude/settings.local.json`,
+or user `~/.claude/settings.json`. Ask the user which scope they want; user
+scope is usually right since it won't affect teammates on a shared project.
+One-off session alternative: `claude --disallowedTools "Agent(<name>)"`.
 
 ## Session-wide alternatives
 
