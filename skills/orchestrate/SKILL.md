@@ -135,9 +135,9 @@ Balance: respect dependencies, avoid parallelizing what must be sequential, and 
 
 ### Background dispatch
 
-- Launch independent lanes with the Agent tool and `run_in_background: true`, then end the turn with a one-line status. The harness notifies you when each finishes — do not poll.
+- Launch independent lanes with the Agent tool, in the background — pass `run_in_background: true` where the parameter is offered; where it is not, background is already the default. Then end the turn with a one-line status. The harness notifies you when each finishes — do not poll.
 - To check what is still running, call `ListAgents`.
-- To add context to a running agent, use `SendMessage` with its name. A delivered message is not a guarantee the agent read or acted on it.
+- To add context to a running agent, use `SendMessage` addressed to the agent ID it returned when spawned (its name also works, but a name can be taken by a newer agent). A delivered message is not a guarantee the agent read or acted on it.
 - To resume a finished agent with its context intact, use `SendMessage`. A fresh `Agent` call starts cold.
 - To stop a lane that has become obsolete, use `TaskStop`. Inspect its partial writes before launching a replacement.
 - When work must pause for something only the user can do, use `AskUserQuestion`. Never use it to wait for background agents.
