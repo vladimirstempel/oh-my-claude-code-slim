@@ -33,9 +33,15 @@ All three changes below (model, prompt, disable) revert the same way: delete
 
 Same shadowing mechanism, different intent: write
 `~/.claude/agents/<name>.md` with the user's own prompt body in place of the
-plugin's, keeping whichever frontmatter fields (`name`, `description`,
-`model`, `effort`) the new prompt still needs. Unlike the model swap above,
-this is a deliberate rewrite — ask the user what the prompt should say
+plugin's. Start from the plugin's frontmatter and carry every field forward
+unless the user is deliberately changing it — don't reduce the list to
+whatever the new prompt happens to need. This matters most for `tools` and
+`disallowedTools`: those are permission boundaries, not preferences, and
+dropping them silently restores capability the plugin deliberately removed.
+`fixer` ships `disallowedTools: Agent, Task` — the line that stops it
+recursively delegating; lose it here and a rewritten `fixer` can spawn
+subagents with no error to warn anyone. Unlike the model swap above, the
+prompt body itself is a deliberate rewrite — ask the user what it should say
 rather than inventing or paraphrasing one yourself.
 
 ### Disable an agent
