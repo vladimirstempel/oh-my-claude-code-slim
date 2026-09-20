@@ -107,9 +107,9 @@ create or edit files in your project, always with your approval:
 | `clonedeps` | cloned repos under `.slim/clonedeps/repos/`; `.slim/clonedeps.json`; a marker block in `.gitignore` and `.ignore`; appends a `## Cloned Dependency Source` section to the project's `CLAUDE.md` |
 
 `deepwork` and `clonedeps` write entirely under `.slim/`, and everything
-there is git-ignored except their two small JSON manifests
-(`.slim/clonedeps.json`, `.slim/codemap.json`), which stay tracked as
-project metadata. `codemap`'s main output, `codemap.md` files, lives outside
+there is git-ignored except the small JSON manifests — `.slim/clonedeps.json`
+from `clonedeps` and `.slim/codemap.json` from `codemap` — which stay tracked
+as project metadata. `codemap`'s main output, `codemap.md` files, lives outside
 `.slim/` — scattered through the repo tree next to the folders they
 document, one per mapped folder plus the root — and is git-ignored by
 filename via its own marker block, not because it sits under `.slim/`. The

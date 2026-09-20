@@ -124,7 +124,8 @@ Use the scheduler model throughout:
 ## Phase Gate and Commit
 
 - after each planned phase, run relevant validation, update the deepwork file,
-  then request its planned `oracle` gate before continuing;
+  then request its planned `oracle` gate, if that phase has one, before
+  continuing;
 - before its planned `oracle` gate, record relevant accepted research and file
   references so `oracle` reviews established context rather than repeating
   discovery;

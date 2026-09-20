@@ -57,7 +57,7 @@ reason to delegate. If it doesn't exist, check for legacy state at
      count — not the full file list. On a real repository the full sorted
      path list runs to thousands of entries, which would dump raw context
      into the caller against `explorer`'s stated purpose of returning
-     compressed context. The per-folder `fixer` lanes in step 5 re-glob
+     compressed context. The per-folder `fixer` lanes in step 6 re-glob
      their own folder directly, so the full list is never needed upstream;
    - `Read` root-level files (`package.json`, `README.md`, the plugin/entry
      file) far enough to summarize the project's overall purpose for the
@@ -110,9 +110,14 @@ reason to delegate. If it doesn't exist, check for legacy state at
 
    ```ignore
    # BEGIN oh-my-claudecode-slim codemap
+   !.slim/
    !codemap.md
    # END oh-my-claudecode-slim codemap
    ```
+
+   The `!.slim/` line matches what `clonedeps` writes: without it, search
+   tools skip the dot directory and `.slim/codemap.json` becomes invisible
+   to `Grep` and `Glob` even though git still tracks it.
 
 5. **Create empty `codemap.md` stubs** in every discovered folder that
    doesn't already have one:
