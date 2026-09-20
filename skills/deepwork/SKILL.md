@@ -80,12 +80,24 @@ reference local files by path rather than copying their contents.
 - before dispatch, choose a small number of coherent implementation phases from
   the work's dependencies and natural delivery boundaries; do not split work
   merely to reduce an `oracle` review's scope;
-- before execution, define coherent delivery phases and make an `oracle` review
-  mandatory after each one; record the phase order, specialist ownership, gate
-  order, and one-line gate rationale in the deepwork file; share a compact
-  version with the user;
+- before execution, define coherent delivery phases and decide which of them
+  get an `oracle` gate, subject to the Oracle Gate Budget below; record the
+  phase order, specialist ownership, gate order, and one-line gate rationale
+  in the deepwork file; share a compact version with the user;
 - before starting each phase, replace the todo list with actionable
   delivery todos for that phase only;
+
+### Oracle Gate Budget
+
+Budget at most 3 initial `oracle` gates for the whole deepwork session,
+regardless of phase count — a five-phase deepwork does not mean five-plus
+Opus-high reviews. `oracle` is an escalation, not a default verification step
+(see `orchestrate`): spend a gate on a phase only when it meets orchestrate's
+escalation criteria — major architectural decisions, high-risk multi-system
+changes, costly trade-offs, or genuine uncertainty where a wrong call is
+expensive. A phase that is routine, low-risk, or mechanical does not need a
+gate; validate it and move on. Each granted gate still allows up to two
+re-reviews, per Oracle Re-Reviews below.
 
 ## Phase Execution
 

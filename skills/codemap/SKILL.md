@@ -52,10 +52,13 @@ reason to delegate. If it doesn't exist, check for legacy state at
    `explorer` is for. Ask it to:
    - `Glob` every file matching the include patterns, minus the excludes and
      `.gitignore` entries;
-   - return the full sorted list of matched relative file paths;
    - return the set of folders that contain at least one matched file
      (every ancestor directory up to the root), with a per-folder file
-     count;
+     count — not the full file list. On a real repository the full sorted
+     path list runs to thousands of entries, which would dump raw context
+     into the caller against `explorer`'s stated purpose of returning
+     compressed context. The per-folder `fixer` lanes in step 5 re-glob
+     their own folder directly, so the full list is never needed upstream;
    - `Read` root-level files (`package.json`, `README.md`, the plugin/entry
      file) far enough to summarize the project's overall purpose for the
      root atlas in Step 4.
@@ -80,7 +83,38 @@ reason to delegate. If it doesn't exist, check for legacy state at
    repository, `null` otherwise — it is what Step 3 diffs against, replacing
    the upstream script's per-file content hashes.
 
-4. **Create empty `codemap.md` stubs** in every discovered folder that
+4. **Update ignore files**, modeled on `clonedeps` Step 4 — same marked-block
+   style, so the entries can be removed cleanly later. Before writing any
+   `codemap.md` stub, inspect existing `.gitignore` and `.ignore`. Update the
+   managed block in place when present; otherwise append it. Add only the
+   missing exact lines below, never duplicate entries or modify unrelated
+   rules.
+
+   `.slim/codemap.json` stays tracked and is not added to either file: it is
+   a small state manifest, and `clonedeps` treats its own `clonedeps.json`
+   the same way. The generated per-folder `codemap.md` files are derived
+   artifacts, so they are what gets ignored — but unlike `clonedeps`' cloned
+   repos, they are not confined to one directory under `.slim/`; they are
+   scattered through the tree, one per mapped folder plus the root. The
+   ignore entry therefore has to match them by filename rather than by path.
+
+   `.gitignore`:
+
+   ```gitignore
+   # BEGIN oh-my-claudecode-slim codemap
+   codemap.md
+   # END oh-my-claudecode-slim codemap
+   ```
+
+   `.ignore`:
+
+   ```ignore
+   # BEGIN oh-my-claudecode-slim codemap
+   !codemap.md
+   # END oh-my-claudecode-slim codemap
+   ```
+
+5. **Create empty `codemap.md` stubs** in every discovered folder that
    doesn't already have one:
 
    ```markdown
@@ -109,7 +143,7 @@ reason to delegate. If it doesn't exist, check for legacy state at
    delegate to one or more `fixer` lanes in parallel (one lane per group of
    folders) — this is bounded, mechanical work.
 
-5. **Delegate codemap writing to `fixer`** — one lane per folder (or per
+6. **Delegate codemap writing to `fixer`** — one lane per folder (or per
    folder group), each reading that folder's matched files and replacing the
    stub with real content per the "Codemap Content" section below.
 
@@ -180,15 +214,26 @@ update or create the project's root `CLAUDE.md`:
 
 A full codemap is available at `codemap.md` in the project root.
 
-Before working on any task, read `codemap.md` to understand:
+When navigating an unfamiliar area of this repo, check `codemap.md` to orient
+quickly:
 - Project architecture and entry points
 - Directory responsibilities and design patterns
 - Data flow and integration points between modules
 
-For deep work on a specific folder, also read that folder's `codemap.md`.
+For deep work on a specific folder, also check that folder's `codemap.md`.
 ```
 
 Idempotent — repeated codemap runs detect the existing section and skip.
+
+## Cleanup
+
+When the user asks to clean the codemap, remove:
+
+- every generated `codemap.md` file (root and per-folder)
+- the managed codemap marker blocks from `.gitignore` and `.ignore`
+
+Ask before removing `.slim/codemap.json` or the `## Repository Map` section
+in `CLAUDE.md` because they may be intentional project metadata.
 
 ## Codemap Content
 

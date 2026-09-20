@@ -34,8 +34,9 @@ architecture review, or speculative agent creation without workflow evidence.
 
 ## Session Mode
 
-When the user asks to look back across recent sessions (e.g. `/reflect
---sessions`), be deliberate about where that evidence comes from.
+When the user asks to look back at a specific past session (e.g. `/reflect
+--session <name-or-path>`), be deliberate about where that evidence comes
+from.
 
 Claude Code does not expose a cross-project, queryable session database the
 way some other agent CLIs do. Session transcripts live per-project under
@@ -103,7 +104,7 @@ Reflect can be triggered directly:
 ```text
 /reflect
 /reflect release workflow and checks
-/reflect --sessions
+/reflect --session <name>
 ```
 
 With no arguments, review recent work broadly. With arguments, focus the

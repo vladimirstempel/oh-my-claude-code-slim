@@ -88,10 +88,10 @@ resolution order.
    agents in one turn.
 4. `/tasks` shows `explorer` on Haiku and `oracle` on Opus while they run
    (the model column requires Claude Code v2.1.242+).
-5. `/omcs-config put fixer on haiku` writes `~/.claude/agents/fixer.md` with
-   `model: haiku` and an unchanged prompt body, and adds
-   `"Agent(oh-my-claudecode-slim:fixer)"` to `permissions.deny` so only the
-   fork remains.
+5. Ask `/omcs-config` in plain language to put `fixer` on Haiku permanently.
+   It should write `~/.claude/agents/fixer.md` with `model: haiku` and an
+   unchanged prompt body, and add `"Agent(oh-my-claudecode-slim:fixer)"` to
+   `permissions.deny` so only the fork remains.
 6. `/clonedeps` clones into an ignored directory and leaves the project's
    own git state untouched.
 
@@ -103,13 +103,21 @@ create or edit files in your project, always with your approval:
 | Skill | Writes |
 |---|---|
 | `deepwork` | `.slim/deepwork/<task>.md` progress files; adds `.slim/deepwork/` to `.gitignore` and an allow-entry to `.ignore` |
-| `codemap` | `codemap.md` in the repo root and in every mapped folder; `.slim/codemap.json`; appends a `## Repository Map` section to the project's `CLAUDE.md` |
+| `codemap` | `codemap.md` in the repo root and in every mapped folder; `.slim/codemap.json`; appends a `## Repository Map` section to the project's `CLAUDE.md`; a marker block in `.gitignore` and `.ignore` that ignores `codemap.md` by filename |
 | `clonedeps` | cloned repos under `.slim/clonedeps/repos/`; `.slim/clonedeps.json`; a marker block in `.gitignore` and `.ignore`; appends a `## Cloned Dependency Source` section to the project's `CLAUDE.md` |
 
-Everything under `.slim/` except the two small JSON manifests is git-ignored.
-The `.ignore` entries exist so Claude Code's search tools can still read what
+`deepwork` and `clonedeps` write entirely under `.slim/`, and everything
+there is git-ignored except their two small JSON manifests
+(`.slim/clonedeps.json`, `.slim/codemap.json`), which stay tracked as
+project metadata. `codemap`'s main output, `codemap.md` files, lives outside
+`.slim/` — scattered through the repo tree next to the folders they
+document, one per mapped folder plus the root — and is git-ignored by
+filename via its own marker block, not because it sits under `.slim/`. The
+`.ignore` entries exist so Claude Code's search tools can still read what
 `.gitignore` hides. `/clonedeps` cleanup removes the clones and the marker
-blocks, and asks before touching the manifest or the `CLAUDE.md` section.
+blocks, and asks before touching the manifest or the `CLAUDE.md` section;
+codemap's own cleanup (see the skill's `## Cleanup` section) does the same
+for the generated `codemap.md` files.
 
 ## What this deliberately does not do
 

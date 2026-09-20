@@ -21,10 +21,12 @@ Each specialist is launched with the Agent tool and the named `subagent_type`.
 Plugin agents are registered under a plugin-scoped identifier, so the value to
 pass is always `oh-my-claudecode-slim:<name>` — the bare name does not resolve.
 
-Exception: if the user has forked an agent into `~/.claude/agents/<name>.md`
-and denied the plugin twin with `"Agent(oh-my-claudecode-slim:<name>)"` (see
-the `omcs-config` skill), the scoped identifier is gone — dispatch the bare
-`<name>` instead.
+If a scoped dispatch (`oh-my-claudecode-slim:<name>`) is refused because the
+agent is not available — for example, the user forked it into
+`~/.claude/agents/<name>.md` and denied the plugin twin with
+`"Agent(oh-my-claudecode-slim:<name>)"` (see the `omcs-config` skill) — retry
+once with the bare `<name>`. If that also fails, report to the user rather
+than guessing further.
 
 `explorer`, via the Agent tool with `subagent_type: "oh-my-claudecode-slim:explorer"`
 - Lane: Fast codebase recon that returns compressed context
