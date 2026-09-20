@@ -49,7 +49,8 @@ on sonnet this once" or "do this search on opus". Prefer it. Nothing to revert.
   `model:` explicitly, and Claude Code's resolution order puts a subagent's
   own frontmatter ahead of this variable (per-invocation parameter >
   frontmatter `model:` > `CLAUDE_CODE_SUBAGENT_MODEL` > main conversation's
-  model).
+  model). That order applies from Claude Code v2.1.251 on; before it, the
+  variable came first and overrode both.
 - To force every subagent — including this plugin's — onto one model
   regardless of its `model:` field, also set `CLAUDE_CODE_SUBAGENT_MODEL_FORCE`
   to `1`. Requires Claude Code v2.1.257+. Set without
@@ -79,7 +80,8 @@ the plugin's copy still winning every `orchestrate` dispatch.
    ```
 
    The scoped form is what works — `"Agent(<name>)"` would deny the user's own
-   fork instead.
+   fork instead. Write it plain, without regex anchors: `^` and `$` inside
+   `Agent(...)` were verified not to match here, and the agent stays enabled.
 4. Tell the user two things: the override is now user-scoped, so plugin updates
    will no longer reach that agent; and `orchestrate` will now dispatch the
    bare `<name>`, because the scoped one is gone.
