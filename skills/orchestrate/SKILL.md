@@ -28,6 +28,53 @@ agent is not available — for example, the user forked it into
 once with the bare `<name>`. If that also fails, report to the user rather
 than guessing further.
 
+### Codex routing (optional)
+
+If the `codex` plugin (openai/codex-plugin-cc) is installed, any agent can run
+on an OpenAI model instead of its Claude one. Before the first dispatch in a
+session, Read `~/.claude/omcs.json` and then `.claude/omcs.json` in the
+project; a project entry replaces the user entry for the same agent. No file,
+or no `codex` key, means no Codex routing — dispatch as usual and say nothing.
+
+```json
+{ "codex": { "oracle": { "model": "gpt-5.5", "effort": "high" } } }
+```
+
+All fields are optional; `{}` runs that agent on Codex's own default model.
+`effort` is one of `none`, `minimal`, `low`, `medium`, `high`, `xhigh`.
+`timeout` is minutes before the lane is abandoned, default 10.
+
+For an agent listed under `codex`, while `codex:codex-rescue` is among the
+available agents:
+
+1. Dispatch `subagent_type: "codex:codex-rescue"` instead of the Claude agent.
+   Start the prompt with `--wait --fresh`, then `--model <model>` and
+   `--effort <effort>` when set, then
+   `Act as the <name> agent: follow the instructions in <role file>.`, then the
+   task brief you would have given the Claude agent. The role file is
+   `${CLAUDE_PLUGIN_ROOT}/agents/<name>.md`, or `~/.claude/agents/<name>.md`
+   when the user forked that agent.
+2. For `explorer`, `librarian`, `oracle` and `observer`, add
+   `Read-only: do not modify any files.` — that keeps the run in Codex's
+   read-only sandbox. `fixer` and `designer` run write-capable, which is the
+   rescue agent's default.
+3. Fallback: if `codex:codex-rescue` is not available, the call errors, or it
+   returns empty output or says it could not do the task (for example
+   `observer` unable to view an image), dispatch the Claude agent with the same
+   brief and tell the user in one line: "Codex unavailable for oracle — ran on
+   Claude." Don't route that agent to Codex again this session.
+4. Timeout: a hung Codex run never errors, so start a timer with each Codex
+   lane — a background Bash `sleep <timeout × 60>`. If the lane finishes
+   first, `TaskStop` the timer. If the timer finishes first, `TaskStop` the
+   lane and fall back as in step 3, saying "Codex timed out for oracle — ran
+   on Claude." For `fixer` and `designer`, inspect the stopped lane's partial
+   writes before the Claude agent starts.
+
+`--wait` keeps Codex in the rescue agent's foreground so its answer comes back
+as the lane's result; background the lane itself with the Agent tool as usual.
+Codex lanes are one-shot: for a follow-up, dispatch a fresh one with the prior
+result in the brief rather than `SendMessage`.
+
 `explorer`, via the Agent tool with `subagent_type: "oh-my-claudecode-slim:explorer"`
 - Lane: Fast codebase recon that returns compressed context
 - Default model: Haiku

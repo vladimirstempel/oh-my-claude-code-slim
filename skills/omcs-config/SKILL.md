@@ -5,9 +5,10 @@ description: Configure oh-my-claudecode-slim — change which model or effort le
 
 # omcs-config
 
-This plugin has no config file and no code path for changing an agent's model.
-Three mechanisms actually work, and they trade off scope against effort. Pick
-the narrowest one that answers the request.
+This plugin has no code path for changing an agent's Claude model. Three
+mechanisms actually work, and they trade off scope against effort. Pick the
+narrowest one that answers the request. Putting an agent on an OpenAI model
+through Codex is a separate, fourth mechanism.
 
 ## Which mechanism
 
@@ -16,6 +17,7 @@ the narrowest one that answers the request.
 | A different model for one delegation | the Agent tool's `model` argument | no |
 | Every subagent on one model | `CLAUDE_CODE_SUBAGENT_MODEL` | yes, per settings file |
 | One agent permanently changed | fork the agent file + deny the plugin twin | yes |
+| One agent on a Codex (OpenAI) model | `codex` entry in `omcs.json` | yes |
 
 ### Important: plugin agents are scoped, and bare names do not shadow them
 
@@ -94,6 +96,37 @@ teammates on a shared project.
 Revert by deleting `~/.claude/agents/<name>.md` and dropping the
 `permissions.deny` rule.
 
+## 4. One agent on a Codex model
+
+Needs the `codex` plugin (openai/codex-plugin-cc). Check that
+`codex:codex-rescue` is among the available agents; if it isn't, tell the user
+to install that plugin and run `/codex:setup`, and stop.
+
+Write the mapping to `~/.claude/omcs.json`, or to `.claude/omcs.json` in the
+project when the user wants it there only (a project entry replaces the user
+entry for the same agent). Merge into the existing file; don't overwrite other
+agents:
+
+```json
+{ "codex": { "oracle": { "model": "gpt-5.5", "effort": "high" }, "fixer": {} } }
+```
+
+`model` is a Codex model name, passed through unchanged; `spark` is shorthand
+for `gpt-5.3-codex-spark`. Omit it to use Codex's default model. `effort` is
+one of `none`, `minimal`, `low`, `medium`, `high`, `xhigh`. `timeout` is
+minutes before a hung run is abandoned, default 10; raise it for agents that
+take on long tasks, such as `fixer`. Don't invent model names — use the one the
+user gives, or leave `model` out.
+
+`orchestrate` then routes that agent through `codex:codex-rescue`, read-only
+for `explorer`, `librarian`, `oracle` and `observer`. If Codex is missing,
+errors, times out, or returns nothing, the same task goes to the agent's Claude model
+instead, so the Claude defaults below stay the fallback. `observer` relies on
+viewing images and PDFs, which Codex may not manage; warn the user when they
+map it.
+
+Revert by removing the agent's entry, or the whole `codex` key.
+
 ## Disable an agent outright
 
 Same permission rule, without the fork: add `"Agent(oh-my-claudecode-slim:<name>)"`
@@ -112,7 +145,7 @@ deliberately changing it — don't reduce the list to whatever the new prompt
 happens to need. This matters most for `tools` and `disallowedTools`: those are
 permission boundaries, not preferences, and dropping them silently restores
 capability the plugin deliberately removed. `fixer` ships
-`disallowedTools: Agent, Task` — the line that stops it recursively delegating;
+`disallowedTools: Agent, Task, WebSearch, WebFetch` — `Agent, Task` is what stops it recursively delegating;
 lose it here and a rewritten `fixer` can spawn subagents with no error to warn
 anyone. Unlike the model swap above, the prompt body itself is a deliberate
 rewrite — ask the user what it should say rather than inventing or paraphrasing
@@ -129,7 +162,7 @@ one yourself.
 | fixer | sonnet | — | yes |
 | observer | sonnet | — | no |
 
-`fixer` also carries `disallowedTools: Agent, Task` — it cannot spawn
+`fixer` also carries `disallowedTools: Agent, Task, WebSearch, WebFetch` — it cannot spawn
 subagents of its own. That's a delegation limit, not a model default, so it
 doesn't get a table column; mention it if the user overrides `fixer` and
 wants that capability back (removing the field, not the model change, is

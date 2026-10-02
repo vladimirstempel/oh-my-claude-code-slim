@@ -59,8 +59,8 @@ name to pass as `subagent_type` (and the name you will see in `/tasks` and the
 
 ## Changing models
 
-There is no config file and no code path for changing an agent's model. Three
-things work, cheapest first:
+There is no code path for changing an agent's Claude model. Three things work,
+cheapest first:
 
 1. **One delegation:** pass the Agent tool's `model` argument (`haiku`,
    `sonnet`, `opus`, `fable`). Nothing to write, nothing to revert.
@@ -71,6 +71,13 @@ things work, cheapest first:
    deny the plugin's twin with `"Agent(oh-my-claudecode-slim:<name>)"`. A
    user-scoped file alone does *not* shadow a plugin agent — the names never
    collide, so you get two agents and the plugin's copy still wins.
+
+4. **One agent on an OpenAI model:** with
+   [codex-plugin-cc](https://github.com/openai/codex-plugin-cc) installed, add
+   `{"codex": {"oracle": {"model": "gpt-5.5", "effort": "high"}}}` to
+   `~/.claude/omcs.json` (or `.claude/omcs.json` per project). `orchestrate`
+   routes that agent through `codex:codex-rescue` and falls back to its Claude
+   model when Codex is missing, fails, or exceeds its `timeout` (minutes, default 10).
 
 Run `/omcs-config` and it will do the right one. See that skill for the full
 resolution order.
@@ -121,8 +128,9 @@ for the generated `codemap.md` files.
 
 ## What this deliberately does not do
 
-- Multi-provider model mixing or a `council` command. Claude Code runs
-  Claude models only. Use opencode if you need to mix providers.
+- Multi-provider model mixing or a `council` command. Beyond the optional
+  Codex routing above, Claude Code runs Claude models only. Use opencode if
+  you need to mix providers freely.
 - A companion window, or tmux/zellij/kitty panel integration.
 - Preset switching or an interview flow.
 - `smartfetch` or `ast-grep` integration.
