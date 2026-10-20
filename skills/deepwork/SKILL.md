@@ -41,7 +41,9 @@ Create a task-specific file such as:
 ```
 
 Before creating this file—and before planning or delegation—inspect the existing
-`.gitignore` and `.ignore`. Add only missing entries and do not add duplicates:
+`.gitignore` and `.ignore`. Add only missing entries and do not add duplicates.
+A `!.slim/` line inside another skill's marker block does not count; add your
+own, because that skill's cleanup removes its block:
 
 ```gitignore
 # .gitignore
@@ -50,6 +52,7 @@ Before creating this file—and before planning or delegation—inspect the exis
 
 ```gitignore
 # .ignore
+!.slim/
 !.slim/deepwork/
 !.slim/deepwork/**
 ```

@@ -21,8 +21,8 @@ Each specialist is launched with the Agent tool and the named `subagent_type`.
 Plugin agents are registered under a plugin-scoped identifier, so the value to
 pass is always `oh-my-claudecode-slim:<name>` — the bare name does not resolve.
 
-If a scoped dispatch (`oh-my-claudecode-slim:<name>`) is refused because the
-agent is not available — for example, the user forked it into
+If a scoped dispatch (`oh-my-claudecode-slim:<name>`) fails with an
+agent-not-found error (never after a classifier denial) — for example, the user forked it into
 `~/.claude/agents/<name>.md` and denied the plugin twin with
 `"Agent(oh-my-claudecode-slim:<name>)"` (see the `omcs-config` skill) — retry
 once with the bare `<name>`. If that also fails, report to the user rather
@@ -82,17 +82,16 @@ code work. A simple task has a complete spec, a small and clear scope, and a
 check that proves it: mechanical edits, renames, a small function with its
 test, a known doc lookup for `librarian`. Keep the default model for
 `oracle`, `designer`, and any task that needs judgment, debugging, or a
-multi-file design.
+multi-file design. Skip this rule for an agent the user moved to another
+model (a fork in `~/.claude/agents/` or a Codex map entry).
 
 Fallback: when the Haiku lane reports BLOCKED, says it could not do the task,
-fails its check, or returns wrong work, dispatch the same agent again with
-`model: "sonnet"`. Inspect the partial writes first. Put Haiku's report in
+fails its check, or returns wrong work, dispatch the same agent again without
+the `model` argument, so it runs on its own model. Inspect the partial writes first. Put Haiku's report in
 the new brief, and start it with: "Escalation from Haiku after <reason>, per
 the orchestrate model policy." Tell the user in one line: "Haiku could not
-finish fixer task — ran on Sonnet." Escalate once; do not go back to Haiku
+finish fixer task — ran on its own model." Escalate once; do not go back to Haiku
 for that task.
-
-The Codex map wins over this rule for an agent it lists.
 
 `explorer`, via the Agent tool with `subagent_type: "oh-my-claudecode-slim:explorer"`
 - Lane: Fast codebase recon that returns compressed context
@@ -138,7 +137,7 @@ The Codex map wins over this rule for an agent it lists.
 `fixer`, via the Agent tool with `subagent_type: "oh-my-claudecode-slim:fixer"`
 - Lane: Bounded implementation and execution
 - Role: Fast execution specialist for well-defined tasks
-- Default model: Sonnet; Haiku for simple tasks, with Sonnet fallback (see Haiku first for simple tasks)
+- Default model: Sonnet; Haiku for simple tasks, with fallback to Sonnet (see Haiku first for simple tasks)
 - Writes files
 - Weakness: design, taste
 - Constraints: Execution-focused. No research, no architectural decisions, and it cannot spawn subagents of its own — hand it a complete task spec and all the context it needs up front.

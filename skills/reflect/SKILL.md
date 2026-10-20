@@ -121,8 +121,9 @@ Before proposing anything, identify what already exists:
   in this plugin, project `.claude/agents/`, or user `~/.claude/agents/`);
 - custom commands (project `.claude/commands/`, user `~/.claude/commands/`);
 - prompt overrides — this plugin's supported override mechanisms are the
-  per-dispatch `model` argument, `CLAUDE_CODE_SUBAGENT_MODEL`, and forking an
-  agent file plus denying the plugin twin, per `omcs-config`;
+  per-dispatch `model` argument, `CLAUDE_CODE_SUBAGENT_MODEL`, forking an
+  agent file plus denying the plugin twin, and `codex` entries in
+  `~/.claude/omcs.json` or `.claude/omcs.json`, per `omcs-config`;
 - active MCP permissions;
 - project playbooks, docs, codemaps, and local workflow notes.
 

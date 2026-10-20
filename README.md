@@ -16,8 +16,8 @@ and 19 agents, this plugin ships 7 and 6, trading breadth for a set small
 enough to read in one sitting and reason about in full. And where
 `oh-my-opencode-slim` (the project this one is ported from) can mix models
 from different providers in the same session, this plugin cannot: Claude
-Code runs on Claude models only. If you need multi-provider model mixing,
-use opencode instead.
+Code runs on Claude models only, except the optional Codex routing below. If
+you need free multi-provider model mixing, use opencode instead.
 
 ## Install
 
@@ -37,8 +37,8 @@ use opencode instead.
 | `fixer` | sonnet | none | writes files | bounded implementation from a complete task spec |
 | `observer` | sonnet | none | read-only (Write/Edit/NotebookEdit denied) | visual analysis of images, screenshots, and PDFs |
 
-`fixer` also carries `disallowedTools: Agent, Task`: it cannot spawn its own
-subagents. Hand it a complete task and all the context it needs up front.
+`fixer` also carries `disallowedTools: Agent, Task, WebSearch, WebFetch`: it
+cannot spawn its own subagents or do web research. Hand it a complete task and all the context it needs up front.
 
 Claude Code registers plugin agents under a plugin-scoped identifier, so the
 name to pass as `subagent_type` (and the name you will see in `/tasks` and the
@@ -79,11 +79,12 @@ cheapest first:
    routes that agent through `codex:codex-rescue` and falls back to its Claude
    model when Codex is missing, fails, or exceeds its `timeout` (minutes, default 10).
 
-`orchestrate` also sends simple tasks, code included, to Haiku with the
-`model` argument. If Haiku cannot finish, it runs the task again on Sonnet.
-
 Run `/omcs-config` and it will do the right one. See that skill for the full
 resolution order.
+
+`orchestrate` also sends simple tasks, code included, to Haiku with the
+`model` argument. If Haiku cannot finish, it runs the task again on the
+agent's own model. It skips agents you moved to another model.
 
 ## Auto mode
 

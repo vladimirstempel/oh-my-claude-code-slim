@@ -33,12 +33,14 @@ Read `.slim/codemap.json` directly — this is a single specific lookup, not a
 reason to delegate. If it doesn't exist, check for legacy state at
 `.slim/cartography.json` and move it to `.slim/codemap.json` if found.
 
-- State exists → skip to Step 3 (Detect Changes).
-- No state → continue to Step 2 (Initialize).
+- State exists and the root `codemap.md` exists → skip to Step 3 (Detect Changes).
+- No state, or state without the root `codemap.md` (a fresh clone: the state
+  is tracked, the maps are git-ignored) → continue to Step 2 (Initialize).
 
-### Step 2: Initialize (only if no state exists)
+### Step 2: Initialize (no usable state)
 
-1. **Decide include/exclude patterns** for core code/config files only:
+1. **Decide include/exclude patterns** for core code/config files only. If
+   state exists, reuse its `include_patterns` and `exclude_patterns`:
    - **Include**: `src/**/*.ts`, `package.json`, and similar — whatever the
      repo's actual source layout is.
    - **Exclude (mandatory)**: tests (`**/*.test.*`, `**/*.spec.*`,
@@ -150,7 +152,8 @@ reason to delegate. If it doesn't exist, check for legacy state at
 
 6. **Delegate codemap writing to `fixer`** — one lane per folder (or per
    folder group), each reading that folder's matched files and replacing the
-   stub with real content per the "Codemap Content" section below.
+   stub with real content per the "Codemap Content" section below. In this
+   step, skip folders whose `codemap.md` already has real content.
 
 ### Step 3: Detect Changes (if state already exists)
 
@@ -170,17 +173,17 @@ repo. See the caveat at the end of this step.
    `exclude_patterns`. For a large change set, hand the list and the
    patterns to `explorer` to filter with `Glob`/`Grep`; for a small one,
    filter it directly.
-4. Classify each filtered path as **added** (not in the old `folders`'
-   tracked files), **removed** (was tracked, no longer exists), or
-   **modified** (still exists, appears in the changed-paths list). Report
-   the three buckets, same as the upstream script's `changes` output.
-5. Derive **affected folders**: every ancestor directory of every changed
+4. Derive **affected folders**: every ancestor directory of every changed
    path, plus the root. Only these folders need their `codemap.md` updated.
-6. Delegate updates to `fixer` (Agent tool, `subagent_type:
+   An affected folder with no matched files left is **removed**: delete its
+   `codemap.md`. An affected folder not in the old `folders` is **new**:
+   give it a stub as in Step 2.
+5. Delegate updates to `fixer` (Agent tool, `subagent_type:
    "oh-my-claudecode-slim:fixer"`), one lane per affected folder.
-7. **Update state**: rewrite `.slim/codemap.json` with the new
-   `last_commit` (current `HEAD`) and `last_run`. If the root isn't a git
-   repo, just bump `last_run`.
+6. **Update state**: rewrite `.slim/codemap.json` with the new
+   `last_commit` (current `HEAD`), `last_run`, and `folders` (old list plus
+   new folders, minus removed ones). If the root isn't a git repo, just bump
+   `last_run`.
 
 **Caveat (real capability gap vs. upstream):** this workflow has no
 exception-allowlist — upstream could force-include a specific file that an
