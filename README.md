@@ -79,6 +79,9 @@ cheapest first:
    routes that agent through `codex:codex-rescue` and falls back to its Claude
    model when Codex is missing, fails, or exceeds its `timeout` (minutes, default 10).
 
+`orchestrate` also sends simple tasks, code included, to Haiku with the
+`model` argument. If Haiku cannot finish, it runs the task again on Sonnet.
+
 Run `/omcs-config` and it will do the right one. See that skill for the full
 resolution order.
 

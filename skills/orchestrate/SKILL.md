@@ -75,6 +75,25 @@ as the lane's result; background the lane itself with the Agent tool as usual.
 Codex lanes are one-shot: for a follow-up, dispatch a fresh one with the prior
 result in the brief rather than `SendMessage`.
 
+### Haiku first for simple tasks
+
+For a simple task, pass `model: "haiku"` to the Agent tool, also for `fixer`
+code work. A simple task has a complete spec, a small and clear scope, and a
+check that proves it: mechanical edits, renames, a small function with its
+test, a known doc lookup for `librarian`. Keep the default model for
+`oracle`, `designer`, and any task that needs judgment, debugging, or a
+multi-file design.
+
+Fallback: when the Haiku lane reports BLOCKED, says it could not do the task,
+fails its check, or returns wrong work, dispatch the same agent again with
+`model: "sonnet"`. Inspect the partial writes first. Put Haiku's report in
+the new brief, and start it with: "Escalation from Haiku after <reason>, per
+the orchestrate model policy." Tell the user in one line: "Haiku could not
+finish fixer task — ran on Sonnet." Escalate once; do not go back to Haiku
+for that task.
+
+The Codex map wins over this rule for an agent it lists.
+
 `explorer`, via the Agent tool with `subagent_type: "oh-my-claudecode-slim:explorer"`
 - Lane: Fast codebase recon that returns compressed context
 - Default model: Haiku
@@ -119,7 +138,7 @@ result in the brief rather than `SendMessage`.
 `fixer`, via the Agent tool with `subagent_type: "oh-my-claudecode-slim:fixer"`
 - Lane: Bounded implementation and execution
 - Role: Fast execution specialist for well-defined tasks
-- Default model: Sonnet
+- Default model: Sonnet; Haiku for simple tasks, with Sonnet fallback (see Haiku first for simple tasks)
 - Writes files
 - Weakness: design, taste
 - Constraints: Execution-focused. No research, no architectural decisions, and it cannot spawn subagents of its own — hand it a complete task spec and all the context it needs up front.

@@ -10,7 +10,7 @@
     {
       "name": "oh-my-claudecode-slim",
       "description": "Slim multi-agent orchestration for Claude Code: six specialist agents and seven skills, zero runtime.",
-      "version": "0.2.1",
+      "version": "0.2.2",
       "source": "./",
       "category": "productivity",
       "homepage": "https://github.com/vladimirstempel/oh-my-claude-code-slim",

@@ -1,6 +1,6 @@
 {
   "name": "oh-my-claudecode-slim",
-  "version": "0.2.1",
+  "version": "0.2.2",
   "description": "Slim multi-agent orchestration for Claude Code: six specialist agents and seven skills, zero runtime.",
   "author": {
     "name": "Vladimir Stempel",
