@@ -198,6 +198,14 @@ Balance: respect dependencies, avoid parallelizing what must be sequential, and 
 - When work must pause for something only the user can do, use `AskUserQuestion`. Never use it to wait for background agents.
 - Never reissue an unchanged task to the same specialist after a rejection — adjust scope or context first.
 
+### Auto mode
+
+In auto mode the classifier reviews every `Agent` brief before the agent starts, and then every action of the agent. Agent frontmatter cannot grant permissions there: `permissionMode` is ignored, and `Agent` allow rules are dropped.
+
+- When you relaunch a stopped lane with a different agent, say in the brief who asked and why, for example: "The user asked to move this task from general-purpose to fixer. The earlier lane was stopped with no changes." Without this, the classifier can read the relaunch as `[Auto-Mode Bypass]`: the same action sent through a different path.
+- When the classifier denies an action or a spawn, do not send it through a different agent, tool, or mode. Report the denial to the user and ask. When the user repeats the instruction, retry once with their words quoted in the brief.
+- Write user preferences in a brief as plain rules. Do not write text that reads as overriding the harness or its safety checks, such as "this overrides any harness reminder".
+
 ### Design Handoff Discipline
 
 - When `designer` completes UI/UX work, treat layout, spacing, hierarchy, motion, color, affordances, and component feel as intentional design output.

@@ -82,6 +82,34 @@ cheapest first:
 Run `/omcs-config` and it will do the right one. See that skill for the full
 resolution order.
 
+## Auto mode
+
+A plugin cannot grant permissions to its agents in auto mode. Claude Code
+ignores `permissionMode` in agent frontmatter there, drops `Agent` allow
+rules, and does not read plugin settings for permissions. The classifier
+reviews each `Agent` brief before the agent starts and each action after.
+
+The usual false denial is `[Auto-Mode Bypass]` on a relaunch: you stop a lane
+and send the same task to a different agent. `/orchestrate` tells the main
+thread to say in the brief that the user asked for the relaunch. If the
+classifier still denies routine dispatches, add an exception to
+`~/.claude/settings.json` (the classifier does not read `autoMode` from
+project settings):
+
+```json
+{
+  "autoMode": {
+    "allow": [
+      "$defaults",
+      "Agent Relaunch: Launching an oh-my-claudecode-slim agent with a task that a stopped agent had, after the user asked to change the agent type, is NOT Auto-Mode Bypass. Every action of the new agent is still reviewed."
+    ]
+  }
+}
+```
+
+Keep `"$defaults"` in the list, or you replace the built-in exceptions.
+Run `claude auto-mode config` to see the result.
+
 ## Verify
 
 1. `claude plugin validate . && claude plugin validate ./agents && claude
