@@ -178,6 +178,10 @@ Ported from [oh-my-opencode-slim](https://github.com/alvinunreal/oh-my-opencode-
 by alvinunreal, MIT licensed. The agent and skill prompts in this plugin are
 adapted from that project for Claude Code.
 
+## Support
+
+oh-my-claudecode-slim is free. If it saves you time, you can [buy me a coffee](https://buymeacoffee.com/stempelv).
+
 ## License
 
 MIT. See `LICENSE`.
