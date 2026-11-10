@@ -1,5 +1,7 @@
 # oh-my-claudecode-slim
 
+[![Buy Me a Coffee](https://img.shields.io/badge/Buy%20Me%20a%20Coffee-ffdd00?logo=buymeacoffee&logoColor=black)](https://buymeacoffee.com/stempelv)
+
 A slim multi-agent orchestration plugin for Claude Code. Six specialist
 agents, seven skills, zero runtime code.
 
@@ -177,10 +179,6 @@ for the generated `codemap.md` files.
 Ported from [oh-my-opencode-slim](https://github.com/alvinunreal/oh-my-opencode-slim)
 by alvinunreal, MIT licensed. The agent and skill prompts in this plugin are
 adapted from that project for Claude Code.
-
-## Support
-
-oh-my-claudecode-slim is free. If it saves you time, you can [buy me a coffee](https://buymeacoffee.com/stempelv).
 
 ## License
 
